@@ -4,8 +4,8 @@ Course: CT312H-Mobile Programming.
 
 Semester 2, Academic year: 2024-2025.
 
-**Student ID**: ...
+**Student ID**: B2111944
 
-**Student Name**: ...
+**Student Name**: Pham Hoang Phuc
 
-**Class Number**: ...
+**Class Number**: M02
