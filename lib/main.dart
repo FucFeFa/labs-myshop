@@ -34,7 +34,9 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: SafeArea(
-        child: UserProductsScreen(),
+        child: ProductDetailScreen(
+          product: ProductsManager().items[0]
+        ),
       ),
     );
   }
