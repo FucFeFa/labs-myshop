@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'ui/products/products_manager.dart';
 import 'ui/products/product_detail_screen.dart';
-import 'ui/products/products_overview_screen.dart';
-import 'ui/products/user_products_screen.dart';
+// import 'ui/products/products_overview_screen.dart';
+// import 'ui/products/user_products_screen.dart';
+import 'ui/cart/cart_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,11 +33,24 @@ class MyApp extends StatelessWidget {
           shadowColor: colorScheme.shadow,
           elevation: 4,
         ),
+
+        //Add a dialogTheme definition to ThemeData
+        dialogTheme: DialogTheme(
+          titleTextStyle: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+
+          contentTextStyle: TextStyle(
+            color: colorScheme.onSurface,
+            fontSize: 20,
+          ),
+        )
+
       ),
       home: SafeArea(
-        child: ProductDetailScreen(
-          product: ProductsManager().items[0]
-        ),
+        child: CartScreen(),
       ),
     );
   }
