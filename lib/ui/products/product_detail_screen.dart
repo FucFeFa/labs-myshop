@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/product.dart';
+import '../products/products_overview_screen.dart';
+import '../cart/cart_screen.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   static const routeName = '/product_detail';
@@ -17,10 +19,26 @@ class ProductDetailScreen extends StatelessWidget {
         title: Text(product.title),
         actions: [
           IconButton(
+            icon: const Icon(Icons.home),
             onPressed: () {
-              // Wishlist button pressed
+              Navigator.of(context).pushReplacement(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) => const ProductsOverviewScreen(),
+                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
+                ),
+              );
             },
-            icon: const Icon(Icons.favorite_border),
+          ),
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.of(context).pushNamed(CartScreen.routeName);
+            },
           ),
         ],
       ),
@@ -28,7 +46,6 @@ class ProductDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Product Image
             SizedBox(
               height: 300,
               width: double.infinity,
@@ -38,8 +55,6 @@ class ProductDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Product Price
             Center(
               child: Text(
                 '\$${product.price}',
@@ -50,8 +65,6 @@ class ProductDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-
-            // Product Description
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               width: double.infinity,
@@ -63,8 +76,6 @@ class ProductDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Quantity Selector
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
@@ -83,16 +94,12 @@ class ProductDetailScreen extends StatelessWidget {
                         child: Text("${index + 1}"),
                       ),
                     ),
-                    onChanged: (value) {
-                      // Handle quantity change
-                    },
+                    onChanged: (value) {},
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-
-            // Size Selector
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Row(
@@ -105,34 +112,19 @@ class ProductDetailScreen extends StatelessWidget {
                   DropdownButton<String>(
                     value: "M",
                     items: const [
-                      DropdownMenuItem(
-                        value: "S",
-                        child: Text("Small (S)"),
-                      ),
-                      DropdownMenuItem(
-                        value: "M",
-                        child: Text("Medium (M)"),
-                      ),
-                      DropdownMenuItem(
-                        value: "L",
-                        child: Text("Large (L)"),
-                      ),
+                      DropdownMenuItem(value: "S", child: Text("Small (S)")),
+                      DropdownMenuItem(value: "M", child: Text("Medium (M)")),
+                      DropdownMenuItem(value: "L", child: Text("Large (L)")),
                     ],
-                    onChanged: (value) {
-                      // Handle size change
-                    },
+                    onChanged: (value) {},
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
-
-            // Add to Cart Button
             Center(
               child: ElevatedButton.icon(
-                onPressed: () {
-                  // Handle add to cart
-                },
+                onPressed: () {},
                 icon: const Icon(Icons.add_shopping_cart),
                 label: const Text("Add to Cart"),
                 style: ElevatedButton.styleFrom(
