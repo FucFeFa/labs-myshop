@@ -90,7 +90,7 @@ class ShoppingCartButton extends StatelessWidget {
       builder: (ctx, cartManager, child){
         return IconButton(
           icon: Badge.count(
-            count: CartManager().productCount,
+            count: cartManager.productCount,
             child: const Icon(
               Icons.shopping_cart,
             ),
