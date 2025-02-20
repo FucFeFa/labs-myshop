@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'user_product_list_tile.dart';
 import 'products_manager.dart';
@@ -34,17 +35,20 @@ class UserProductList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productsManager = ProductsManager();
-
-    return ListView.builder(
-      itemCount: productsManager.itemCount,
-      itemBuilder: (ctx, i) => Column(
-        children: [
-          UserProductListTile(productsManager.items[i]),
-          const Divider(),
-        ],
-      ),
+    return Consumer<ProductsManager>(
+      builder: (ctx, productsManager, child){
+        return ListView.builder(
+          itemCount: productsManager.itemCount,
+          itemBuilder: (ctx, i) => Column(
+            children: [
+              UserProductListTile(productsManager.items[i]),
+              const Divider(),
+            ],
+          ),
+        );
+      }
     );
+    
   }
 }
 

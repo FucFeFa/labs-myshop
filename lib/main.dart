@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myshop/ui/products/products_overview_screen.dart';
 import 'package:myshop/ui/screens.dart';
+import 'package:provider/provider.dart';
 import 'ui/products/products_manager.dart';
 import 'ui/products/product_detail_screen.dart';
 import 'ui/products/products_overview_screen.dart';
@@ -24,64 +25,71 @@ class MyApp extends StatelessWidget {
       surfaceTint: Colors.grey[200],
     );
 
-    return MaterialApp(
-      title: 'MyShop',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Lato',
-        colorScheme: colorScheme,
-        appBarTheme: AppBarTheme(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
-          shadowColor: colorScheme.shadow,
-          elevation: 4,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => ProductsManager(),
         ),
-
-        //Add a dialogTheme definition to ThemeData
-        dialogTheme: DialogTheme(
-          titleTextStyle: TextStyle(
-            color: colorScheme.onSurface,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      ],
+      child: MaterialApp(
+        title: 'MyShop',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: 'Lato',
+          colorScheme: colorScheme,
+          appBarTheme: AppBarTheme(
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            shadowColor: colorScheme.shadow,
+            elevation: 4,
           ),
-
-          contentTextStyle: TextStyle(
-            color: colorScheme.onSurface,
-            fontSize: 20,
+      
+          //Add a dialogTheme definition to ThemeData
+          dialogTheme: DialogTheme(
+            titleTextStyle: TextStyle(
+              color: colorScheme.onSurface,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+      
+            contentTextStyle: TextStyle(
+              color: colorScheme.onSurface,
+              fontSize: 20,
+            ),
+          )
+      
+        ),
+        home: const ProductsOverviewScreen(),
+      
+        routes: {
+          CartScreen.routeName: (ctx) => const SafeArea(
+            child: CartScreen(),
           ),
-        )
-
+          OrdersScreen.routeName: (ctx) => const SafeArea(
+            child: OrdersScreen(),
+          ),
+          UserProductsScreen.routeName: (ctx) => SafeArea(
+            child: UserProductsScreen(),
+          )
+        },
+      
+        onGenerateRoute: (settings) {
+          if (settings.name == ProductDetailScreen.routeName) {
+            final productId = settings.arguments as String;
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (ctx) {
+                return SafeArea(
+                  child: ProductDetailScreen(
+                    product: ProductsManager().findById(productId)!,
+                  ),
+                );
+              }
+            );
+          }
+          return null;
+        },
       ),
-      home: const ProductsOverviewScreen(),
-
-      routes: {
-        CartScreen.routeName: (ctx) => const SafeArea(
-          child: CartScreen(),
-        ),
-        OrdersScreen.routeName: (ctx) => const SafeArea(
-          child: OrdersScreen(),
-        ),
-        UserProductsScreen.routeName: (ctx) => SafeArea(
-          child: UserProductsScreen(),
-        )
-      },
-
-      onGenerateRoute: (settings) {
-        if (settings.name == ProductDetailScreen.routeName) {
-          final productId = settings.arguments as String;
-          return MaterialPageRoute(
-            settings: settings,
-            builder: (ctx) {
-              return SafeArea(
-                child: ProductDetailScreen(
-                  product: ProductsManager().findById(productId)!,
-                ),
-              );
-            }
-          );
-        }
-        return null;
-      },
     );
   }
 }

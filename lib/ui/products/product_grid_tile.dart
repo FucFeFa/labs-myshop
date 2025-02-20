@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myshop/ui/products/product_detail_screen.dart';
+import 'package:myshop/ui/products/products_manager.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/product.dart';
 
@@ -19,7 +21,11 @@ class ProductGridTile extends StatelessWidget {
         footer: ProductGridFooter(
           product: product,
           onFavoritePressed: () {
-            print('Toggle a favorite product');
+            context.read<ProductsManager>().updateProduct(
+              product.copyWith(
+                isFavorite: !product.isFavorite,
+              ),
+            );
           },
           onAddToCartPressed: () {
             print('Add itm to cart');
