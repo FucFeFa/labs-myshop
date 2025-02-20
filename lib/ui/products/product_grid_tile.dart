@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myshop/ui/cart/cart_manager.dart';
 import 'package:myshop/ui/products/product_detail_screen.dart';
 import 'package:myshop/ui/products/products_manager.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,25 @@ class ProductGridTile extends StatelessWidget {
             );
           },
           onAddToCartPressed: () {
-            print('Add itm to cart');
+            final cart = context.read<CartManager>();
+            cart.addItem(product);
+
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: const Text(
+                    'Item added to cart',
+                  ),
+                  duration: const Duration(seconds: 2),
+                  action: SnackBarAction(
+                    label: 'UNDO', 
+                    onPressed: () {
+                      cart.removeItem(product.id!);
+                    },
+                  ),
+                ),
+              );
           },
         ),
         child: GestureDetector(
