@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/product.dart';
 import '../products/products_overview_screen.dart';
 import '../cart/cart_screen.dart';
+import '../../ui/cart/cart_manager.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget {
   static const routeName = '/product_detail';
+
   const ProductDetailScreen({
     required this.product,
     super.key,
@@ -13,18 +16,27 @@ class ProductDetailScreen extends StatelessWidget {
   final Product product;
 
   @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  int _selectedQuantity = 1;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(product.title),
+        title: Text(widget.product.title),
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
             onPressed: () {
               Navigator.of(context).pushReplacement(
                 PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const ProductsOverviewScreen(),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const ProductsOverviewScreen(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
                     return FadeTransition(
                       opacity: animation,
                       child: child,
@@ -50,14 +62,14 @@ class ProductDetailScreen extends StatelessWidget {
               height: 300,
               width: double.infinity,
               child: Image.network(
-                product.imageUrl,
+                widget.product.imageUrl,
                 fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 10),
             Center(
               child: Text(
-                '\$${product.price}',
+                '\$${widget.product.price}',
                 style: const TextStyle(
                   color: Colors.grey,
                   fontSize: 20,
@@ -69,7 +81,7 @@ class ProductDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               width: double.infinity,
               child: Text(
-                product.description,
+                widget.product.description,
                 textAlign: TextAlign.center,
                 softWrap: true,
                 style: Theme.of(context).textTheme.titleLarge,
@@ -86,7 +98,7 @@ class ProductDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   DropdownButton<int>(
-                    value: 1,
+                    value: _selectedQuantity,
                     items: List.generate(
                       10,
                       (index) => DropdownMenuItem(
@@ -94,29 +106,11 @@ class ProductDetailScreen extends StatelessWidget {
                         child: Text("${index + 1}"),
                       ),
                     ),
-                    onChanged: (value) {},
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  const Text(
-                    "Size:",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 10),
-                  DropdownButton<String>(
-                    value: "M",
-                    items: const [
-                      DropdownMenuItem(value: "S", child: Text("Small (S)")),
-                      DropdownMenuItem(value: "M", child: Text("Medium (M)")),
-                      DropdownMenuItem(value: "L", child: Text("Large (L)")),
-                    ],
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedQuantity = value!;
+                      });
+                    },
                   ),
                 ],
               ),
@@ -124,7 +118,18 @@ class ProductDetailScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  final cart = context.read<CartManager>();
+                  for (int i = 0; i < _selectedQuantity; i++) {
+                    cart.addItem(widget.product);
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Added $_selectedQuantity to cart'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                },
                 icon: const Icon(Icons.add_shopping_cart),
                 label: const Text("Add to Cart"),
                 style: ElevatedButton.styleFrom(
