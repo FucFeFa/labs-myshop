@@ -49,4 +49,20 @@ class ProductsManager with ChangeNotifier {
     _items.removeAt(index);
     notifyListeners();
   }
+
+  Future<void> fetchProducts() async {
+    final fetchedProducts = await _productsService.fetchProducts();
+    _items.clear();
+    _items.addAll(fetchedProducts);
+    notifyListeners();
+  }
+
+  Future<void> fetchUserProducts() async {
+    final fetchedProducts = await _productsService.fetchProducts(
+      filteredByUser: true,
+    );
+    _items.clear();
+    _items.addAll(fetchedProducts);
+    notifyListeners();
+  }
 }
