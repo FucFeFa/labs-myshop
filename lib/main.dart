@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myshop/ui/products/edit_product_screen.dart';
-import 'package:myshop/ui/products/products_overview_screen.dart';
-import 'package:myshop/ui/screens.dart';
 import 'package:provider/provider.dart';
-import 'ui/products/products_manager.dart';
-import 'ui/products/product_detail_screen.dart';
-import 'ui/products/products_overview_screen.dart';
-import 'ui/products/user_products_screen.dart';
-import 'ui/cart/cart_screen.dart';
-import 'ui/orders/orders_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+import 'ui/screens.dart';
+
+Future<void> main() async {
+  await dotenv.load();
   runApp(const MyApp());
 }
 
