@@ -29,6 +29,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (context) => AuthManager(),
+        ),
+        ChangeNotifierProvider(
           create: (ctx) => ProductsManager(),
         ),
         ChangeNotifierProvider(
@@ -38,78 +41,90 @@ class MyApp extends StatelessWidget {
           create: (ctx) => OrdersManager(),
         ),
       ],
-      child: MaterialApp(
-        title: 'MyShop',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Lato',
-          colorScheme: colorScheme,
-          appBarTheme: AppBarTheme(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            shadowColor: colorScheme.shadow,
-            elevation: 4,
-          ),
-      
-          //Add a dialogTheme definition to ThemeData
-          dialogTheme: DialogTheme(
-            titleTextStyle: TextStyle(
-              color: colorScheme.onSurface,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+      child: Consumer<AuthManager>(
+        builder: (ctx, authManager, child) {
+          return MaterialApp(
+            title: 'MyShop',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              fontFamily: 'Lato',
+              colorScheme: colorScheme,
+              appBarTheme: AppBarTheme(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                shadowColor: colorScheme.shadow,
+                elevation: 4,
+              ),
+          
+              //Add a dialogTheme definition to ThemeData
+              dialogTheme: DialogTheme(
+                titleTextStyle: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+          
+                contentTextStyle: TextStyle(
+                  color: colorScheme.onSurface,
+                  fontSize: 20,
+                ),
+              )
+          
             ),
-      
-            contentTextStyle: TextStyle(
-              color: colorScheme.onSurface,
-              fontSize: 20,
-            ),
-          )
-      
-        ),
-        home: const ProductsOverviewScreen(),
-      
-        routes: {
-          CartScreen.routeName: (ctx) => const SafeArea(
-            child: CartScreen(),
-          ),
-          OrdersScreen.routeName: (ctx) => const SafeArea(
-            child: OrdersScreen(),
-          ),
-          UserProductsScreen.routeName: (ctx) => SafeArea(
-            child: UserProductsScreen(),
-          )
-        },
-      
-        onGenerateRoute: (settings) {
-          if (settings.name == ProductDetailScreen.routeName) {
-            final productId = settings.arguments as String;
-            return MaterialPageRoute(
-              settings: settings,
-              builder: (ctx) {
-                return SafeArea(
-                  child: ProductDetailScreen(
-                    product: ProductsManager().findById(productId)!,
+            home: authManager.isAuth
+                ? const SafeArea(child: ProductsOverviewScreen())
+                : FutureBuilder(
+                    future: authManager.tryAutoLogin(), 
+                    builder: (ctx, snapshot) {
+                      return snapshot.connectionState == ConnectionState.waiting
+                          ? const SafeArea(child: SplashScreen())
+                          : const SafeArea(child: AuthScreen());
+                    },
                   ),
+            routes: {
+              CartScreen.routeName: (ctx) => const SafeArea(
+                child: CartScreen(),
+              ),
+              OrdersScreen.routeName: (ctx) => const SafeArea(
+                child: OrdersScreen(),
+              ),
+              UserProductsScreen.routeName: (ctx) => SafeArea(
+                child: UserProductsScreen(),
+              )
+            },
+          
+            onGenerateRoute: (settings) {
+              if (settings.name == ProductDetailScreen.routeName) {
+                final productId = settings.arguments as String;
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (ctx) {
+                    return SafeArea(
+                      child: ProductDetailScreen(
+                        product: ProductsManager().findById(productId)!,
+                      ),
+                    );
+                  }
                 );
               }
-            );
-          }
-          if(settings.name == EditProductScreen.routeName) {
-            final productId = settings.arguments as String?;
-            return MaterialPageRoute(
-              builder: (ctx) {
-                return SafeArea(
-                  child: EditProductScreen(
-                    productId != null
-                        ? ctx.read<ProductsManager>().findById(productId)
-                        : null,
-                  ),
+              if(settings.name == EditProductScreen.routeName) {
+                final productId = settings.arguments as String?;
+                return MaterialPageRoute(
+                  builder: (ctx) {
+                    return SafeArea(
+                      child: EditProductScreen(
+                        productId != null
+                            ? ctx.read<ProductsManager>().findById(productId)
+                            : null,
+                      ),
+                    );
+                  }
                 );
               }
-            );
-          }
-          return null;
-        },
+              return null;
+            },
+          );
+        }
       ),
     );
   }
