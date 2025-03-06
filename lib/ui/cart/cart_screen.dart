@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'cart_manager.dart';
 import 'cart_item_card.dart';
+import '../../services/auth_service.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -23,7 +24,15 @@ class CartScreen extends StatelessWidget {
             cart: cart,
             onOrderNowPressed: cart.totalAmount <= 0
               ? null
-              : () {
+              : () async {
+                final authService = AuthService();
+                final user = await authService.getUserFromStore();
+                final userId = user?.id;
+
+                if (userId == null) return;
+
+                if (!context.mounted) return;
+
                 context.read<OrdersManager>().addOrder(
                   cart.products,
                   cart.totalAmount,
